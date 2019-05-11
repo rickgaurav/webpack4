@@ -2,7 +2,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 exports.devServer = ({host, port} = {}) => ({
 	devServer: {
-		stats: "verbose", //What info to display about bundles.
+		// stats: "errors-only", //What info to display about bundles.
 		host, // Host, default to localhost
 		port, // Port, default to 3000
 		overlay: {  //ows an overlay on browser for errors/warnings while compiling.

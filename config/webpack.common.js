@@ -16,13 +16,7 @@ const commonConfig = env => merge([{
     },
     devtool: "cheap-module-eval-source-map",
     plugins: [
-        // new CleanWebpackPlugin([ paths.public ], {
-        //     root: paths.root,
-        //     verbose: true,
-        //     dry: false,
-        //     watch: false,
-        //     allowExternal: false
-        // }),
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: 'Singapore MRT',
             filename: 'index.html',
