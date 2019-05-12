@@ -2,9 +2,9 @@ import {createAction} from 'redux-actions';
 import keyMirror from 'keymirror';
 
 import {
-	getRoutes,
-	getStationLineToStationsAndStationToLinesMap,
-	getStationToNeighboursMap
+	createAdjacencyList,
+	getPaths,
+	processStationsData
 } from '../../helpers/station-helpers';
 
 const ACTION_TYPES = keyMirror({
@@ -27,18 +27,17 @@ const reducer = (state, action) => {
 	switch(action.type) {
 		case ACTION_TYPES.SET_ACTIVE_TAB:
 			console.log("In action");
-			const { stationToLinesMap , stationLineToStationsMap, stationIdToStationMap } = getStationLineToStationsAndStationToLinesMap();
-			const stationToNeighboursMap = getStationToNeighboursMap(Object.values(stationLineToStationsMap));
-
-			getRoutes(12, 66, stationToNeighboursMap, stationIdToStationMap);
+			const { stationNameToStationIdsMap , stationIdToStationMap, stationLineToStationsMap } = processStationsData();
+			const stationToNeighboursMap = createAdjacencyList(stationLineToStationsMap, stationNameToStationIdsMap, stationIdToStationMap);
+			debugger;
+			getPaths(180, 242, stationToNeighboursMap, stationIdToStationMap, stationNameToStationIdsMap);
 			return {
 				...state,
 				active_tab: action.payload.active_tab
 			};
 		default:
 			return state;
-
 	}	
-}
+};
 
 export default reducer;
