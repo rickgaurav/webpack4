@@ -1,0 +1,198 @@
+@te-line-color: #945618;
+@pe-line-color: #00484F;
+@ns-line-color: #DD3C35;
+@ne-line-color: #9E23B2;
+@je-line-color: #00ACB9;
+@ew-line-color: #00953B;
+@cc-line-color: #F5A015;
+@dt-line-color: #0155B1;
+
+@white: #fff;
+@black: #000;
+
+.container {
+  :global(.strong) {
+    font-weight: 800;
+  }
+
+  :global(.line-te-color .ant-steps-item-icon),
+  :global(.line-te-color .ant-steps-item-icon) {
+    background: @te-line-color;
+    color: @white;
+  }
+
+  :global(.line-pe-color .ant-steps-item-icon),
+  :global(.line-bp-color .ant-steps-item-icon),
+  :global(.line-se-color .ant-steps-item-icon),
+  :global(.line-sw-color .ant-steps-item-icon),
+  :global(.line-pw-color .ant-steps-item-icon),
+  :global(.line-pe-color .ant-steps-icon),
+  :global(.line-bp-color .ant-steps-icon),
+  :global(.line-se-color .ant-steps-icon),
+  :global(.line-sw-color .ant-steps-icon),
+  :global(.line-pw-color .ant-steps-icon) {
+    background: @pe-line-color;
+    color: @white;
+  }
+
+  :global(.line-ns-color .ant-steps-item-icon),
+  :global(.line-ns-color .ant-steps-icon) {
+    background: @ns-line-color;
+    color: @white;
+  }
+
+  :global(.line-ne-color .ant-steps-item-icon),
+  :global(.line-ne-color .ant-steps-icon) {
+    background: @ne-line-color;
+    color: @white;
+  }
+
+  :global(.line-je-color .ant-steps-item-icon),
+  :global(.line-js-color .ant-steps-item-icon),
+  :global(.line-jw-color .ant-steps-item-icon),
+  :global(.line-je-color .ant-steps-icon),
+  :global(.line-js-color .ant-steps-icon),
+  :global(.line-jw-color .ant-steps-icon) {
+    background: @je-line-color;
+    color: @white;
+  }
+
+  :global(.line-dt-color .ant-steps-item-icon),
+  :global(.line-dt-color .ant-steps-icon) {
+    background: @dt-line-color;
+    color: @white;
+  }
+
+  :global(.line-cg-color .ant-steps-item-icon),
+  :global(.line-ew-color .ant-steps-item-icon),
+  :global(.line-cg-color .ant-steps-icon),
+  :global(.line-ew-color .ant-steps-icon) {
+    background: @ew-line-color;
+    color: @white;
+  }
+
+  :global(.line-cc-color .ant-steps-item-icon),
+  :global(.line-ce-color .ant-steps-item-icon),
+  :global(.line-cc-color .ant-steps-icon),
+  :global(.line-ce-color .ant-steps-icon) {
+    background: @cc-line-color;
+    color: @black;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  :global(.next-line-te-color .ant-steps-item-tail::after),
+  :global(.next-line-te-color .ant-steps-item-icon) {
+    background-color: @te-line-color;
+  }
+
+  :global(.next-line-pe-color .ant-steps-item-tail::after),
+  :global(.next-line-bp-color .ant-steps-item-tail::after),
+  :global(.next-line-se-color .ant-steps-item-tail::after),
+  :global(.next-line-sw-color .ant-steps-item-tail::after),
+  :global(.next-line-pw-color .ant-steps-item-tail::after) {
+    background-color: @pe-line-color;
+  }
+
+  :global(.next-line-ns-color .ant-steps-item-tail::after) {
+    background-color: @ns-line-color;
+  }
+
+  :global(.next-line-ne-color .ant-steps-item-tail::after) {
+    background-color: @ne-line-color;
+  }
+
+  :global(.next-line-je-color .ant-steps-item-tail::after),
+  :global(.next-line-js-color .ant-steps-item-tail::after),
+  :global(.next-line-jw-color .ant-steps-item-tail::after) {
+    background-color: @je-line-color;
+  }
+
+  :global(.next-line-dt-color .ant-steps-item-tail::after) {
+    background-color: @dt-line-color;
+  }
+
+  :global(.next-line-cg-color .ant-steps-item-tail::after),
+  :global(.next-line-ew-color .ant-steps-item-tail::after) {
+    background-color: @ew-line-color;
+  }
+
+  :global(.next-line-cc-color .ant-steps-item-tail::after),
+  :global(.next-line-ce-color .ant-steps-item-tail::after) {
+    background-color: @cc-line-color;
+  }
+
+  :global(.line-te) {
+    background-color: @te-line-color;
+    color: #fff;
+    padding: 4px;
+  }
+
+
+  :global(.line-pe),
+  :global(.line-pw),
+  :global(.line-sw),
+  :global(.line-se),
+  :global(.line-bp) {
+    background-color: @pe-line-color;
+    color: #fff;
+    padding: 4px;
+  }
+
+  :global(.line-ns) {
+    background-color: @ns-line-color;
+    color: #fff;
+    padding: 4px;
+  }
+
+  :global(.line-ne) {
+    background-color: @ne-line-color;
+    color: #fff;
+    padding: 4px;
+  }
+
+  :global(.line-je),
+  :global(.line-js),
+  :global(.line-jw) {
+    background-color: @je-line-color;
+    color: #fff;
+    padding: 4px;
+
+  }
+
+  :global(.line-dt) {
+    background-color: @dt-line-color;
+    color: #fff;
+    padding: 4px;
+
+  }
+
+  :global(.line-cg),
+  :global(.line-ew) {
+    background-color: @ew-line-color;
+    color: #fff;
+    padding: 4px;
+
+  }
+
+  :global(.line-cc),
+  :global(.line-ce) {
+    background-color: @cc-line-color;
+    padding: 4px;
+    color: black;
+  }
+}

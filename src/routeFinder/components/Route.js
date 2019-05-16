@@ -1,100 +1,98 @@
 import React from 'react';
+import { Steps } from 'antd';
+import styles from './Route.less';
+import { isEmpty } from 'lodash';
 
-const Route = ({ route, stationIdToStationsMap, stationNameToStationIdsMap }) => {
-  const { timeTaken, lineChangesCount, path } = route;
+const Step = Steps.Step;
 
-  const directions = [];
+const getStationIcon = (stationId, stationIdToStationMap, stationNameToStationIdsMap ) => {
+  const stationIds = stationNameToStationIdsMap[stationIdToStationMap[stationId].name];
+  return stationIds.map(stationId => {
+    const station =stationIdToStationMap[stationId];
+    return (
+      <div className={`line-${station.lineName}`.toLowerCase()}>
+        {station.lineName}{station.position}
+      </div>
+    )
+  });
 
-  let index = 0;
+};
 
-  while(index < path.length) {
-
-    const stationId = path[index];
-    const currentStation = stationIdToStationsMap[stationId];
-
-    if(index === path.length - 1) {
-      directions.push(
-        <div>
-          {currentStation.name} :You have reached your destination
+const getDescription = (station, nextStation, time, isInterchange) => {
+  const nameAndTime = (
+    <div>
+      <div>
+        {station.name}
+      </div>
+      <div>
+        Time: {time} mins
+      </div>
+    </div>
+  );
+  if(!nextStation) {
+    return (
+      <div>
+        {nameAndTime}
+        <div className='strong'>
+          Destination Reached
         </div>
-      );
-      return;
-    }
+      </div>
+    );
+  }
+    return (
+      <div>
+        {nameAndTime}
+        {
+          time === 0 && isInterchange ?
+            <div className='strong'>Board on {station.lineName} line</div> : ''
+        }
+        {
+          station.lineName !== nextStation.lineName ?
+            <div className='strong'>Change to {nextStation.lineName} Line</div> : ''
+        }
+      </div>
+    );
+};
 
-    const nextStation = path[index+1];
-    const sameNameStationIds = stationNameToStationIdsMap[stationIdToStationsMap[stationId].name];
-    const isInterchangeStation = sameNameStationIds.length > 1;
+const isInterchangeStation = (stationId, stationIdToStationMap, stationNameToStationIdsMap) => {
+  return stationNameToStationIdsMap[stationIdToStationMap[stationId].name].length > 1;
+};
 
-    if(index === 0) {
-      if(isInterchangeStation) {
-        directions.push(
-          <div>
-            ${stationIdToStationsMap[stationId].name} : Board the train on ${nextStation.lineName} Line(Towards ${nextStation.name} station)
-          </div>
-        );
-      } else {
-        directions.push(
-          <div>
-            ${stationIdToStationsMap[stationId].name} : Board the train towards ${nextStation.name} station.
-          </div>
-        );
-      }
-    } else {
-      if(isInterchangeStation) {
-        directions.push(
-          <div>
-            ${stationIdToStationsMap[stationId].name} : Board the train on ${nextStation.lineName} Line(Towards ${nextStation.name} station)
-          </div>
-        );
-      } else {
-        directions.push(
-          <div>
-            ${stationIdToStationsMap[stationId].name} : Board the train towards ${nextStation.name} station.
-          </div>
-        );
-      }
-    }
-
-
+const Route = ({ route, stationIdToStationMap, stationNameToStationIdsMap }) => {
+  const { timeTaken, lineChangesCount, path } = route;
+  if(!path || path.length === 0 || isEmpty(stationIdToStationMap) || isEmpty(stationNameToStationIdsMap)) {
+    return null;
   }
 
 
 
+  let time = 0;
+  const steps = path.map((stationId, index, pathArray) => {
+    const station = stationIdToStationMap[stationId];
+    const  nextStation = pathArray[index+1] && stationIdToStationMap[pathArray[index+1]];
+    const isInterchange = isInterchangeStation(stationId, stationIdToStationMap, stationNameToStationIdsMap);
+    const title = getStationIcon(stationId, stationIdToStationMap, stationNameToStationIdsMap);
 
+    const step =  (
+      <Step key={stationId}
+            status='wait'
+            title={title}
+            description={getDescription(station, nextStation, time, isInterchange)}
+            className={`next-line-${nextStation && nextStation.lineName.toLowerCase()}-color line-${station.lineName.toLowerCase()}-color`}/>
+    );
 
-
-
-
-
-
-
-
-
-
-
-  path.forEach((stationId, index, pathArray) => {
-
-
-
-
-
-    if(isInterchangeStation) {
-      if(index === 0) {
-
-        return;
-      }
-
-      directions.push(
-
-      );
-      return;
-    }
-
-
+    time = ((nextStation && nextStation.lineName) !== station.lineName) ? time + 4: time + 2;
+    return step;
   });
+
+
   return (
-    <div>
-      asd
-    </div>
+    <Steps size="small"
+           labelPlacement='vertical'
+           className={styles.container}>
+      {steps}
+    </Steps>
   );
 };
+
+export default Route;

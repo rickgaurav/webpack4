@@ -3,6 +3,7 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
+
 import asyncComponent from './AsyncComponent';
 import styles from "./MainBar.less";
 
