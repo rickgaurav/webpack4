@@ -1,218 +1,18 @@
 import stations from '../static/stations.json';
 
-// For performance reasons, both the maps are computed in same function. With increasing number of lines and stations
-// the performance can be impacted, hence computed 2 things in one function.
 
-export const getStationLineToStationsAndStationToLinesMap = () => {
-  console.log("getStationLineToStationsAndStationToLinesMap");
-  let stationLineToStationsMap = {} , stationToLinesMap = {}, stationIdToStationMap = {};
-  Object
-    .entries(stations)
-    .reduce(
-      ({stationLineToStationsMap, stationToLinesMap, stationIdToStationMap}, [stationName, linesObject], index) => {
-        const station = {
-          id: index + 1,
-          name: stationName
-        };
-        const lineNames = [];
-
-        Object
-          .entries(linesObject)
-          .reduce(
-            ({stationLineToStationsMap, stationIdToStationMap}, [lineName, stationPositionsOnLine]) => {
-              const stationWithLineName = {
-                ...station,
-                lineName
-              };
-
-              lineNames.push(lineName);
-
-              if(!Array.isArray(stationPositionsOnLine)) {
-                stationPositionsOnLine = [stationPositionsOnLine];
-              }
-
-              stationPositionsOnLine.forEach(position => {
-                const st = {
-                  ...stationWithLineName,
-                  position
-                };
-
-                stationLineToStationsMap[lineName] = [
-                  ...(stationLineToStationsMap[lineName] || []),
-                  st
-                ];
-
-                stationIdToStationMap[st.id] = st;
-
-              });
-
-              return {stationLineToStationsMap, stationIdToStationMap};
-            },
-            {stationLineToStationsMap, stationIdToStationMap}
-          );
-
-        stationToLinesMap[stationName] = lineNames;
-        return {stationLineToStationsMap, stationToLinesMap, stationIdToStationMap};
-      },
-      {stationLineToStationsMap, stationToLinesMap, stationIdToStationMap}
-    );
-
-  console.log("getStationLineToStationsAndStationToLinesMap finished");
-
-  return {
-    stationToLinesMap,
-    stationLineToStationsMap,
-    stationIdToStationMap
-  };
-};
-
-export const getStationToNeighboursMap = (allLineStations) => {
-  // {
-  //   "Eunos_id": {
-  //     "payalebar_id": {
-  //       ...payalebar details
-  //     },
-  //     "kembangan_id": {
-  //         ...kembangan details
-  //     }
-  //   }
-  // }
-
-  console.log("getStationToNeighboursMap");
-  const stationToNeighboursMap = {};
-
-  allLineStations.reduce((stationToNeighboursMap, lineStations) => {
-    lineStations.sort((station1, station2) => station1.position - station2.position); // Sort Line Stations by position
-
-    let prevStationOnLine = null;
-
-    lineStations.reduce((stationToAdjacentsMap, station) => {
-      if(prevStationOnLine === null) {
-        prevStationOnLine = station;
-        return stationToAdjacentsMap;
-      }
-
-      if(!stationToAdjacentsMap[station.id] || !stationToAdjacentsMap[station.id][prevStationOnLine.id]) {
-        stationToAdjacentsMap[station.id] = {
-          ...stationToAdjacentsMap[station.id],
-          [prevStationOnLine.id]: prevStationOnLine.id
-        };
-      }
-
-      if(!stationToAdjacentsMap[prevStationOnLine.id] || !stationToAdjacentsMap[prevStationOnLine.id][station.id]) {
-        stationToAdjacentsMap[prevStationOnLine.id] = {
-          ...stationToAdjacentsMap[prevStationOnLine.id],
-          [station.id] : station.id
-        };
-      }
-      prevStationOnLine = station;
-      return stationToAdjacentsMap;
-    }, stationToNeighboursMap);
-
-    return stationToNeighboursMap;
-  }, stationToNeighboursMap);
-
-  console.log("getStationToNeighboursMap finished");
-  return stationToNeighboursMap;
-};
-
-const getRoutesUtil = (source, destination, route, visited, stationsData, result) => {
-  // station with same id but different position(loop stations), must be marked as visited no matter which position was visited. Hence visited key is the ID of station.
-  if(route.length > (stationsData.maxLength || 10)) {
-    return;
-  }
-  visited[source.id] = true;
-
-  if(source.id === destination.id) { // it could be same stations but with different positions on same stations. Hence check Id.
-    if(result.shortestRoute.length === 0 || result.shortestRoute.length > route.length) {
-      result.shortestRoute.length = 0;
-      result.shortestRoute.push(...route)
-    }
-
-    result.allRoutes.push([...route]);
-    visited[source.id] = false;
-    return;
-  }
-
-  const adjacentStationsIds = Object.values(stationsData.stationToNeighboursMap[source.id]);
-
-  adjacentStationsIds.forEach(adjacentStationId => {
-    if(!visited[adjacentStationId]) {
-      const adjStation = stationsData.stationIdToStationMap[adjacentStationId];
-      route.push(adjStation.id);
-
-      getRoutesUtil(
-        adjStation,
-        destination,
-        route,
-        visited,
-        stationsData,
-        result
-      );
-
-      const ind = route.indexOf(adjStation);
-      route.splice(ind, 1);
-    }
-  });
-
-  visited[source.id] = false;
-};
-
-export const getRoutes = (sourceStationId, destinationStationId, stationToNeighboursMap, stationIdToStationMap) => {
-  console.log("getRoutes");
-  const visited = {};
-  const route = [];
-  route.isDirect = true;
-  const allRoutes = [];
-  const directRoute = {};
-  // allRoutes.smallestLength = 0;
-  // allRoutes.secondSmallestLength = 0;
-  // allRoutes.thirdSmallestLength = 0;
-
-  const shortestRoute = [];
-
-  const source = stationIdToStationMap[sourceStationId];
-  const destination = stationIdToStationMap[destinationStationId];
-
-  route.push(source.id);
-
-  console.log("Source:", source);
-  console.log("Destination:", destination);
-  console.log("Station Map:", stationIdToStationMap);
-  console.log("Adjacency list:", stationToNeighboursMap);
-  debugger
-
-  getRoutesUtil(
-    source,
-    destination,
-    route,
-    visited,
-    {stationToNeighboursMap, stationIdToStationMap, maxLength: 30},
-    {shortestRoute, allRoutes, directRoute});
-
-  console.log("All Routes: ", allRoutes);
-  console.log("Shortest Route:", shortestRoute);
-  console.log("getRoutes End");
-};
 /*
-
 Objectives:
 1. Find Direct route
-2. Find the 2 smallest routes excluding direct route
-3. Find Route with minimum line changes.
-4. Only find the routes, with number of stations less than a particular threshold.
-5. Only find the routes which take less than a threshold time to travel.
-6. Shortest time route.
+2. Find Route with minimum line changes.
+3. Shortest time route.
+3. Only find the routes, with number of stations less than a particular threshold.
+4. Only find the routes which take less than a threshold time to travel.
 
 The below function(and the recursive function called from it) are optimised to find a solution to achieve objectives.
 Hence a number of other variables are used to track the state of routes to achieve above objectives.
 
 */
-
-
-
-
-
 
 const getStationNeighbours = (station, stationToNeighboursMap, stationNameToStationIdsMap) => {
   const sameNameStationIds = stationNameToStationIdsMap[station.name] || [];
@@ -225,11 +25,13 @@ const getStationNeighbours = (station, stationToNeighboursMap, stationNameToStat
 const markNodeVisited = (node, visited, stationNameToStationIdsMap) => {
   const sameStationIds = stationNameToStationIdsMap[node.name];
   sameStationIds.forEach(stationId => visited[stationId] = true);
+  return visited;
 };
 
 const markNodeNotVisited = (node, visited, stationNameToStationIdsMap) => {
   const sameStationIds = stationNameToStationIdsMap[node.name];
   sameStationIds.forEach(stationId => visited[stationId] = false);
+  return visited;
 };
 
 const isDestinationReached = (source, destination, stationIdToStationMap, stationNameToStationIdsMap) => {
@@ -265,30 +67,30 @@ const removeLastNodeFromPath = (route, stationIdToStationMap) => {
   route.time -= 2;
 };
 
-
-/*
-  source: Source Station.
-  destination: Destination station.
-  route: Route from source to destination.
-  visited: Tracks the visited nodes of a route on a graph.
-  stationsData: Contains various info related to station hashtables.
-  result: contains the resultant routes etc.
-*/
 const getPathsUtil = (source, destination, route, visited, stationsData, result) => {
-  debugger
   if(route.path.length > (stationsData.maxLength || 10)) {
+    return;
+  }
+
+  if(route.time > stationsData.maxTime) {
     return;
   }
 
   markNodeVisited(source, visited, stationsData.stationNameToStationIdsMap);
 
   if(isDestinationReached(source, destination, stationsData.stationIdToStationMap, stationsData.stationNameToStationIdsMap)) {
-    if(result.shortestRoute.length === 0 || result.shortestRoute.length > route.length) {
-      result.shortestRoute.length = 0;
-      result.shortestRoute.push(...route.path)
+    if(result.shortestRoute.path.length === 0 || result.shortestRoute.path.length > route.length) {
+      result.shortestRoute = {
+        ...route,
+        path: [...route.path]
+      };
     }
 
-    result.allRoutes.push([...route.path]);
+    result.allRoutes.push([{
+      ...route,
+      path: [...route.path]
+    }]);
+
     markNodeNotVisited(source, visited, stationsData.stationNameToStationIdsMap);
     return;
   }
@@ -317,24 +119,38 @@ const getPathsUtil = (source, destination, route, visited, stationsData, result)
   markNodeNotVisited(source, visited, stationsData.stationNameToStationIdsMap);
 };
 
-export const getPaths = (sourceStationId, destinationStationId, stationToNeighboursMap, stationIdToStationMap, stationNameToStationIdsMap) => {
-  debugger;
-  console.log("getPaths Start");
-  const visited = {};
-  // const route = [];
-  // const allRoutes = [];
-  // const shortestRoute = [];
+export const getPaths = (
+    sourceStationId,
+    destinationStationId,
+    stationToNeighboursMap,
+    stationIdToStationMap,
+    stationNameToStationIdsMap,
+    maxStations,
+    maxTime
+  ) => {
 
+  const visited = {};
   const result = {
     allRoutes: [],
-    shortestRoute: [],
-    minimumLineChangesRoute: []
+    shortestRoute: {
+      path: [],
+      time: 0,
+      lineChangesCount: 0
+    }
   };
 
   const route = {
     path: [],
     time: 0,
     lineChangesCount: 0
+  };
+
+  const stationsData = {
+    stationToNeighboursMap,
+    stationIdToStationMap,
+    stationNameToStationIdsMap,
+    maxLength: maxStations || 10,
+    maxTime: maxTime || 60
   };
 
   const source = stationIdToStationMap[sourceStationId];
@@ -347,18 +163,14 @@ export const getPaths = (sourceStationId, destinationStationId, stationToNeighbo
     destination,
     route,
     visited,
-    {stationToNeighboursMap, stationIdToStationMap, stationNameToStationIdsMap, maxLength: 10},
-    result);
+    stationsData,
+    result
+  );
 
-
-
-  console.log("All Routes: ", result.allRoutes);
-  console.log("Shortest Route:", result.shortestRoute);
-  console.log("getPaths End");
+  return result;
 };
 
 export const processStationsData = () => {
-  console.log("processStationsData start");
   let stationLineToStationsMap = {} , stationIdToStationMap = {}, stationNameToStationIdsMap={};
 
   let id = 0;
@@ -416,8 +228,6 @@ export const processStationsData = () => {
         });
     });
 
-  console.log("processStationsData end");
-
   return {
     stationLineToStationsMap,
     stationIdToStationMap,
@@ -438,14 +248,7 @@ const addNeighbours = (stationToNeighboursMap, currentStation, prevStation) => {
 };
 
 
-export const createAdjacencyList = () => {
-  console.log("createAdjacencyList Start");
-
-  const {
-    stationLineToStationsMap,
-    stationIdToStationMap,
-    stationNameToStationIdsMap
-  } = processStationsData();
+export const createAdjacencyList = (stationLineToStationsMap) => {
 
   const stationToNeighboursMap = {};
   const allLineStations = Object.values(stationLineToStationsMap);
@@ -466,10 +269,5 @@ export const createAdjacencyList = () => {
     });
   });
 
-  console.log("createAdjacencyList End");
-  console.log("StationIdToStation:", stationIdToStationMap);
-  console.log("Line to stations:", stationLineToStationsMap);
-  console.log("Interchange stations info:", stationNameToStationIdsMap);
-  console.log("Station to neighbours:", stationToNeighboursMap);
   return stationToNeighboursMap;
 };

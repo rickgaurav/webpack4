@@ -41,6 +41,21 @@ exports.loadCSS = ({ include, exclude,  env } = {}) => ({
           'css-loader',
           'sass-loader'
         ]
+      },
+      {
+        test: /\.less$/,
+        use: [
+          env && env.PLATFORM === 'production' ? MiniCssExtractPlugin.loader: 'style-loader',
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+              modules: true,
+              localIdentName: "[local]___[hash:base64:5]"
+            }
+          },
+          'less-loader'
+        ]
       }
     ],
   },

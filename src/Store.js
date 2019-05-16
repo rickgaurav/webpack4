@@ -3,6 +3,6 @@ import RootReducer from './RootReducer';
 
 const store = createStore(RootReducer);
 
-window.store = () => store.getState();
+window.stores = () => store.getState();
 
 export default store;
