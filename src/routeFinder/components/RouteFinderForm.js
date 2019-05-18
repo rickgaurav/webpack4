@@ -21,6 +21,7 @@ class RouteFinderForm extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        this.props.toggleLoading();
         this.props.getRoutes(values.from, values.to, values.maxStationsOnRoute, values.maxTravelTime);
       }
     });

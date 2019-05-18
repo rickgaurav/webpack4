@@ -7,7 +7,7 @@ import {
 import asyncComponent from './AsyncComponent';
 import styles from "./MainBar.less";
 
-const AsyncRoutesApp = asyncComponent(() => import(/* webpackChunkName: "routes" */ '../../routeFinder/containers/RouteFinderContainer'));
+const AsyncRoutesApp = asyncComponent(() => import(/* webpackChunkName: "routes" */ '../../routeFinder/components/RouteFinderApp'));
 
 const MainBar = (props) => {
 	return (

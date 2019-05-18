@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {getRoutes, initStationsData} from "../ducks/RouteFinderDuck";
+import { getRoutes, toggleLoading } from "../ducks/RouteFinderDuck";
 import RouteFinderForm from "../components/RouteFinderForm";
 
 const mapStateToProps = state => {
@@ -31,7 +31,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
           maxStations,
           maxTime
         )
-      )
+      ),
+
+    toggleLoading: () => dispatch(toggleLoading(dispatch, true))
   }
 };
 

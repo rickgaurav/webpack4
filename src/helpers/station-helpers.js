@@ -86,10 +86,10 @@ const getPathsUtil = (source, destination, route, visited, stationsData, result)
       };
     }
 
-    result.allRoutes.push([{
+    result.allRoutes.push({
       ...route,
       path: [...route.path]
-    }]);
+    });
 
     markNodeNotVisited(source, visited, stationsData.stationNameToStationIdsMap);
     return;
@@ -132,6 +132,11 @@ export const getPaths = (
   const visited = {};
   const result = {
     allRoutes: [],
+    directRoute: {
+      path: [],
+      time: 0,
+      lineChangesCount: 0
+    },
     shortestRoute: {
       path: [],
       time: 0,

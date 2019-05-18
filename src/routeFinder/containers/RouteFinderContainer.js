@@ -1,6 +1,14 @@
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import RouteFinder from "../components/RouteFinder";
 import {initStationsData} from "../ducks/RouteFinderDuck";
+
+
+const mapStateToProps = state => {
+  debugger
+  return {
+    loading: state.routeFinder.loading
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -9,6 +17,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(RouteFinder);

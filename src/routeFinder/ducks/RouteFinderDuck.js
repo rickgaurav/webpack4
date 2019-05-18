@@ -6,6 +6,7 @@ import {processStationsData, createAdjacencyList, getPaths} from "../../helpers/
 const ACTION_TYPES = keyMirror({
   INIT_STATIONS: null,
   GET_PATHS: null,
+  TOGGLE_LOADING: null,
 });
 
 const initial_state = {
@@ -19,7 +20,8 @@ const initial_state = {
     to: {},
     maxStationsOnRoute: null,
     maxTravelTime: null
-  }
+  },
+  loading: false
 };
 
 export const initStationsData = createAction(
@@ -53,6 +55,8 @@ export const getRoutes = createAction(
    maxStations,
    maxTime
   ) => {
+
+      // dispatch(toggleLoading(dispatch, true));
       const result = getPaths(
         sourceId,
         destinationId,
@@ -62,30 +66,43 @@ export const getRoutes = createAction(
         maxStations,
         maxTime
       );
+      dispatch(toggleLoading(dispatch, false));
       return {
-        allRoutes: result.allRoutes
+        allRoutes: result.allRoutes,
       }
   }
 );
 
+export const toggleLoading = createAction(
+  ACTION_TYPES.TOGGLE_LOADING,
+  (dispatch, loading) => ({ loading })
+);
 
-const reducer = (state, action) => {
+
+const reducer = (state, { type, payload }) => {
   state = state || initial_state;
 
-  switch(action.type) {
+  switch(type) {
     case ACTION_TYPES.INIT_STATIONS:
       return {
         ...state,
-        stationLineToStationsMap: action.payload.stationLineToStationsMap,
-        stationIdToStationMap: action.payload.stationIdToStationMap,
-        stationNameToStationIdsMap: action.payload.stationNameToStationIdsMap,
-        stationToNeighboursMap: action.payload.stationToNeighboursMap
+        stationLineToStationsMap: payload.stationLineToStationsMap,
+        stationIdToStationMap: payload.stationIdToStationMap,
+        stationNameToStationIdsMap: payload.stationNameToStationIdsMap,
+        stationToNeighboursMap: payload.stationToNeighboursMap
       };
 
     case ACTION_TYPES.GET_PATHS:
       return {
         ...state,
-        allRoutes: action.payload.allRoutes
+        allRoutes: payload.allRoutes
+      };
+
+      case ACTION_TYPES.TOGGLE_LOADING:
+        debugger
+      return {
+        ...state,
+        loading: payload.loading
       };
     default:
       return state;
