@@ -1,40 +1,51 @@
 import React from 'react';
 import Route from "./Route.js";
 import styles from './RouteResults.less';
-import { Collapse } from 'antd';
 
-const Panel = Collapse.Panel;
+const RouteResults = ({timeSortedRoutes, transferSortedRoutes, stationIdToStationMap, stationNameToStationIdsMap}) => {
+  const renderRoutes = (routes, header, error) => {
+    return (
+      <div>
+        <div className='routes-group-header'>
+          {header}
+        </div>
+        {
+          routes.length ?
+            routes.map(
+              route => {
+                const routeProps = {
+                  route,
+                  stationIdToStationMap,
+                  stationNameToStationIdsMap
+                };
+                return <Route {...routeProps}/>
+              }) :
+            <div className='error'>
+              {error}
+            </div>
+        }
+      </div>
+    );
+  };
 
-const RouteResults = props => {
-  // const route1 ={
-  //   // path: [76, 181, 1, 114, 131, 31, 58, 201, 245]
-  //   // path: [180, 237, 222, 242, 12, 118, 76, 181, 1, 114, 131, 31, 58, 201, 245]
-  //   path: [180, 237, 240, 14, 13, 113, 265, 140, 236, 7, 219, 137, 20, 151, 42, 25, 83, 99, 40, 72, 60, 106, 52, 130, 22, 3, 111]
-  // };
-
-  const route = props.allRoutes[0] || {};
+  if(!timeSortedRoutes.length && !transferSortedRoutes.length) {
+    return (
+      <div className={`${styles.container}`} key='time'>
+        <div className='error'>
+          No Routes exist for the selected filters. Please increase the time and max stations count.
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.container}>
+      [<div className={styles.container} key='time'>
+        {renderRoutes(timeSortedRoutes, 'Routes sorted by Time Taken')}
+      </div>,
+      <div className={styles.container} key='transfers'>
+        {renderRoutes(transferSortedRoutes, 'Routes sorted by Number of Transfers')}
+      </div>]
 
-      <Collapse accordion>
-        <Panel header="Direct Route (No Line Changes)" className='result-panel' key="1">
-          <p>{text}</p>
-        </Panel>
-        <Panel header="Quickest Route(Minimum Time)" key="2">
-          <p>{text}</p>
-        </Panel>
-        <Panel header="Non Direct Shortest Route" key="3">
-          <p>{text}</p>
-        </Panel>
-        <Panel header="Next 3 Quickest routes">
-
-        </Panel>
-        <Panel header="Next 3 Routes with minimum transfers">
-
-        </Panel>
-      </Collapse>,
-    </div>
   );
 };
 

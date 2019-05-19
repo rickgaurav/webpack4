@@ -40,7 +40,11 @@ class RouteFinderForm extends Component {
         {getFieldDecorator(label.toLowerCase(), {
           rules: [{ required: true, message: 'Please select a station' }],
         })(
-          <Select>
+          <Select
+            showSearch
+            placeholder='Select Station'
+            optionFilterProp="children"
+          >
             {
               stations.map(station => (
                 <Option value={station.id} key={station.id}>

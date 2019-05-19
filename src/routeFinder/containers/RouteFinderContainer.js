@@ -4,9 +4,10 @@ import {initStationsData} from "../ducks/RouteFinderDuck";
 
 
 const mapStateToProps = state => {
-  debugger
+
   return {
-    loading: state.routeFinder.loading
+    loading: state.routeFinder.loading,
+    searchFlag: state.routeFinder.searchFlag
   };
 };
 

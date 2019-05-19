@@ -11,12 +11,38 @@
 @black: #000;
 
 .container {
+  padding: 16px;
+  min-width: 100%;
+  overflow: auto;
+  border-bottom: 1px solid grey;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  :global(.ant-steps-item-title) {
+    line-height: 10px;
+    font-size: 10px;
+  }
+
+  :global(.route-header) {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px dotted grey;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-weight: 600;
+  }
+
+
   :global(.strong) {
     font-weight: 800;
   }
 
   :global(.line-te-color .ant-steps-item-icon),
-  :global(.line-te-color .ant-steps-item-icon) {
+  :global(.line-te-color .ant-steps-icon) {
     background: @te-line-color;
     color: @white;
   }
@@ -80,23 +106,7 @@
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  :global(.next-line-te-color .ant-steps-item-tail::after),
-  :global(.next-line-te-color .ant-steps-item-icon) {
+  :global(.next-line-te-color .ant-steps-item-tail::after) {
     background-color: @te-line-color;
   }
 

@@ -29,29 +29,20 @@ const getDescription = (station, nextStation, time, isInterchange) => {
       </div>
     </div>
   );
-  if(!nextStation) {
-    return (
-      <div>
-        {nameAndTime}
-        <div className='strong'>
-          Destination Reached
-        </div>
-      </div>
-    );
-  }
-    return (
-      <div>
-        {nameAndTime}
-        {
-          time === 0 && isInterchange ?
-            <div className='strong'>Board on {station.lineName} line</div> : ''
-        }
-        {
-          station.lineName !== nextStation.lineName ?
-            <div className='strong'>Change to {nextStation.lineName} Line</div> : ''
-        }
-      </div>
-    );
+
+  return (
+    <div>
+      {nameAndTime}
+      {
+        time === 0 && isInterchange && nextStation ?
+          <div className='strong'>Board on {nextStation.lineName} line</div> : ''
+      }
+      {
+        time > 0 && nextStation && station.lineName !== nextStation.lineName ?
+          <div className='strong'>Change to {nextStation.lineName} Line</div> : ''
+      }
+    </div>
+  );
 };
 
 const isInterchangeStation = (stationId, stationIdToStationMap, stationNameToStationIdsMap) => {
@@ -59,14 +50,12 @@ const isInterchangeStation = (stationId, stationIdToStationMap, stationNameToSta
 };
 
 const Route = ({ route, stationIdToStationMap, stationNameToStationIdsMap }) => {
-  const { timeTaken, lineChangesCount, path } = route;
+  const { time, lineChangesCount, path } = route;
   if(!path || path.length === 0 || isEmpty(stationIdToStationMap) || isEmpty(stationNameToStationIdsMap)) {
     return null;
   }
 
-
-
-  let time = 0;
+  let timeTaken = 0;
   const steps = path.map((stationId, index, pathArray) => {
     const station = stationIdToStationMap[stationId];
     const  nextStation = pathArray[index+1] && stationIdToStationMap[pathArray[index+1]];
@@ -77,21 +66,30 @@ const Route = ({ route, stationIdToStationMap, stationNameToStationIdsMap }) => 
       <Step key={stationId}
             status='wait'
             title={title}
-            description={getDescription(station, nextStation, time, isInterchange)}
+            description={getDescription(station, nextStation, timeTaken, isInterchange)}
             className={`next-line-${nextStation && nextStation.lineName.toLowerCase()}-color line-${station.lineName.toLowerCase()}-color`}/>
     );
 
-    time = ((nextStation && nextStation.lineName) !== station.lineName) ? time + 4: time + 2;
+    timeTaken = ((nextStation && nextStation.lineName) !== station.lineName) && index > 0 ? timeTaken + 4: timeTaken + 2;
     return step;
   });
 
 
   return (
-    <Steps size="small"
-           labelPlacement='vertical'
-           className={styles.container}>
-      {steps}
-    </Steps>
+    <div className={styles.container}>
+        <div className='route-header'>
+          <div>
+            Total Time Taken: {time} minutes
+          </div>
+          <div>
+            Number of Transfers to Destination: {lineChangesCount}
+          </div>
+        </div>
+        <Steps size="small"
+               labelPlacement='vertical'>
+          {steps}
+        </Steps>
+    </div>
   );
 };
 

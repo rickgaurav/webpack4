@@ -1,18 +1,6 @@
 import stations from '../static/stations.json';
+import { sortBy } from 'lodash';
 
-
-/*
-Objectives:
-1. Find Direct route
-2. Find Route with minimum line changes.
-3. Shortest time route.
-3. Only find the routes, with number of stations less than a particular threshold.
-4. Only find the routes which take less than a threshold time to travel.
-
-The below function(and the recursive function called from it) are optimised to find a solution to achieve objectives.
-Hence a number of other variables are used to track the state of routes to achieve above objectives.
-
-*/
 
 const getStationNeighbours = (station, stationToNeighboursMap, stationNameToStationIdsMap) => {
   const sameNameStationIds = stationNameToStationIdsMap[station.name] || [];
@@ -42,10 +30,11 @@ const isDestinationReached = (source, destination, stationIdToStationMap, statio
 
 const updateRoute = (route, newStationId, stationIdToStationMap) => {
   const lastStation = stationIdToStationMap[route.path[route.path.length-1]];
+  const isLastStationSource = (route.path.length - 1) === 0;
   const newStation = stationIdToStationMap[newStationId];
   route.path.push(newStationId);
 
-  if(lastStation.lineName !== newStation.lineName) {
+  if(!isLastStationSource && (lastStation.lineName !== newStation.lineName)) {
     route.lineChangesCount += 1;
     route.time += 4;
     return route;
@@ -58,13 +47,30 @@ const updateRoute = (route, newStationId, stationIdToStationMap) => {
 const removeLastNodeFromPath = (route, stationIdToStationMap) => {
   const removedNodeId = route.path.splice(route.path.length - 1, 1); // Remove the last node, since its already counted in path.
   const lastNodeIdAfterRemoval = route.path[route.path.length - 1];
-  if(stationIdToStationMap[removedNodeId].lineName !== stationIdToStationMap[lastNodeIdAfterRemoval].lineName) {
+  const isLastNodeSource = (route.path.length - 1) === 0;
+  if(!isLastNodeSource && stationIdToStationMap[removedNodeId].lineName !== stationIdToStationMap[lastNodeIdAfterRemoval].lineName) {
     route.lineChangesCount -= 1;
     route.time -= 4;
     return;
   }
 
   route.time -= 2;
+};
+
+const updateResultProperties = (result, propertyName, sortByProp, route) => {
+  const routeCopy = {
+    ...route,
+    path: [...route.path]
+  };
+
+  result[propertyName].push(routeCopy);
+  result[propertyName] = sortBy(result[propertyName], [sortByProp, 'path.length']);
+  result[propertyName].length = result[propertyName].length > 4 ? 4 : result[propertyName].length;
+};
+
+const updateResult = (result, route) => {
+  updateResultProperties(result, 'timeSortedRoutes', 'time', route);
+  updateResultProperties(result, 'transferSortedRoutes', 'lineChangesCount', route);
 };
 
 const getPathsUtil = (source, destination, route, visited, stationsData, result) => {
@@ -79,18 +85,7 @@ const getPathsUtil = (source, destination, route, visited, stationsData, result)
   markNodeVisited(source, visited, stationsData.stationNameToStationIdsMap);
 
   if(isDestinationReached(source, destination, stationsData.stationIdToStationMap, stationsData.stationNameToStationIdsMap)) {
-    if(result.shortestRoute.path.length === 0 || result.shortestRoute.path.length > route.length) {
-      result.shortestRoute = {
-        ...route,
-        path: [...route.path]
-      };
-    }
-
-    result.allRoutes.push({
-      ...route,
-      path: [...route.path]
-    });
-
+    updateResult(result, route);
     markNodeNotVisited(source, visited, stationsData.stationNameToStationIdsMap);
     return;
   }
@@ -119,6 +114,17 @@ const getPathsUtil = (source, destination, route, visited, stationsData, result)
   markNodeNotVisited(source, visited, stationsData.stationNameToStationIdsMap);
 };
 
+
+/*
+Objectives:
+1. Find 4 shortest time routes
+2. Find 4 minimum transfer routes
+3. Only find the routes, with number of stations less than a particular threshold.
+4. Only find the routes which take less than a threshold time to travel.
+
+The below function(and the recursive function called from it) are optimised to find a solution to achieve objectives.
+Hence a number of other variables are used to track the state of routes to achieve above objectives.
+*/
 export const getPaths = (
     sourceStationId,
     destinationStationId,
@@ -131,17 +137,9 @@ export const getPaths = (
 
   const visited = {};
   const result = {
-    allRoutes: [],
-    directRoute: {
-      path: [],
-      time: 0,
-      lineChangesCount: 0
-    },
-    shortestRoute: {
-      path: [],
-      time: 0,
-      lineChangesCount: 0
-    }
+    // allRoutes: [],
+    timeSortedRoutes: [],
+    transferSortedRoutes: []
   };
 
   const route = {

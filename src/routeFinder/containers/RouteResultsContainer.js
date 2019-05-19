@@ -3,9 +3,10 @@ import RouteResults from "../components/RouteResults";
 
 const mapStateToProps = state => {
   return {
-    allRoutes: state.routeFinder.allRoutes,
+    transferSortedRoutes: state.routeFinder.transferSortedRoutes,
+    timeSortedRoutes: state.routeFinder.timeSortedRoutes,
     stationNameToStationIdsMap :state.routeFinder.stationNameToStationIdsMap,
-    stationIdToStationMap :state.routeFinder.stationIdToStationMap
+    stationIdToStationMap :state.routeFinder.stationIdToStationMap,
   };
 };
 

@@ -14,17 +14,11 @@ export default class RouteFinder extends Component {
   }
 
   render() {
-    console.log('Called Render of RouteFinder');
-    // debugger
-    // if(this.props.loading) {
-    //   return (<Loading />);
-    // }
-    console.log("Loading: ", this.props.loading);
     return (
       <div className={styles.container}>
         {this.props.loading && <Loading /> }
         <RouteFinderFormContainer/>
-        <RouteResultsContainer/>
+        {this.props.searchFlag && <RouteResultsContainer/>}
       </div>
     );
   }

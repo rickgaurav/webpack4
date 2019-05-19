@@ -14,13 +14,10 @@ const initial_state = {
   stationToNeighboursMap: {},
   stationIdToStationMap: {},
   stationNameToStationIdsMap: {},
-  allRoutes: [],
-  formData: {
-    from: {},
-    to: {},
-    maxStationsOnRoute: null,
-    maxTravelTime: null
-  },
+  // allRoutes: [],
+  timeSortedRoutes: [],
+  transferSortedRoutes: [],
+  searchFlag: false,
   loading: false
 };
 
@@ -68,7 +65,9 @@ export const getRoutes = createAction(
       );
       dispatch(toggleLoading(dispatch, false));
       return {
-        allRoutes: result.allRoutes,
+        // allRoutes: result.allRoutes,
+        timeSortedRoutes: result.timeSortedRoutes,
+        transferSortedRoutes: result.transferSortedRoutes,
       }
   }
 );
@@ -95,11 +94,13 @@ const reducer = (state, { type, payload }) => {
     case ACTION_TYPES.GET_PATHS:
       return {
         ...state,
-        allRoutes: payload.allRoutes
+        // allRoutes: payload.allRoutes
+        timeSortedRoutes: payload.timeSortedRoutes,
+        transferSortedRoutes: payload.transferSortedRoutes,
+        searchFlag: true
       };
 
-      case ACTION_TYPES.TOGGLE_LOADING:
-        debugger
+    case ACTION_TYPES.TOGGLE_LOADING:
       return {
         ...state,
         loading: payload.loading

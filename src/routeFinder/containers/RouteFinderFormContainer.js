@@ -4,10 +4,6 @@ import RouteFinderForm from "../components/RouteFinderForm";
 
 const mapStateToProps = state => {
   return {
-    from: state.routeFinder.formData.from,
-    to: state.routeFinder.formData.to,
-    maxStations: state.routeFinder.formData.maxStationsOnRoute,
-    maxTravelTime: state.routeFinder.formData.maxTravelTime,
     stationToNeighboursMap :state.routeFinder.stationToNeighboursMap,
     stationNameToStationIdsMap :state.routeFinder.stationNameToStationIdsMap,
     stationIdToStationMap :state.routeFinder.stationIdToStationMap
