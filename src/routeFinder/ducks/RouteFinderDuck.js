@@ -7,6 +7,7 @@ const ACTION_TYPES = keyMirror({
   INIT_STATIONS: null,
   GET_PATHS: null,
   TOGGLE_LOADING: null,
+  SET_PATHS: null,
 });
 
 const initial_state = {
@@ -40,6 +41,8 @@ export const initStationsData = createAction(
   }
 );
 
+export const setPaths = createAction(ACTION_TYPES.SET_PATHS);
+
 export const getRoutes = createAction(
   ACTION_TYPES.GET_PATHS,
   (
@@ -53,22 +56,26 @@ export const getRoutes = createAction(
    maxTime
   ) => {
 
-      // dispatch(toggleLoading(dispatch, true));
-      const result = getPaths(
-        sourceId,
-        destinationId,
-        stationToNeighboursMap,
-        stationIdToStationMap,
-        stationNameToStationIdsMap,
-        maxStations,
-        maxTime
-      );
-      dispatch(toggleLoading(dispatch, false));
-      return {
-        // allRoutes: result.allRoutes,
-        timeSortedRoutes: result.timeSortedRoutes,
-        transferSortedRoutes: result.transferSortedRoutes,
-      }
+      dispatch(toggleLoading(dispatch, true));
+      setTimeout(() => {
+        const result = getPaths(
+          sourceId,
+          destinationId,
+          stationToNeighboursMap,
+          stationIdToStationMap,
+          stationNameToStationIdsMap,
+          maxStations,
+          maxTime
+        );
+
+        dispatch(setPaths({
+          // allRoutes: result.allRoutes,
+          timeSortedRoutes: result.timeSortedRoutes,
+          transferSortedRoutes: result.transferSortedRoutes,
+        }));
+        dispatch(toggleLoading(dispatch, false));
+      }, 0);
+
   }
 );
 
@@ -91,7 +98,7 @@ const reducer = (state, { type, payload }) => {
         stationToNeighboursMap: payload.stationToNeighboursMap
       };
 
-    case ACTION_TYPES.GET_PATHS:
+    case ACTION_TYPES.SET_PATHS:
       return {
         ...state,
         // allRoutes: payload.allRoutes

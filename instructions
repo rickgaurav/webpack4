@@ -1,0 +1,14 @@
+INSTRUCTIONS TO RUN:
+
+1. Install latest node
+2. npm install
+3. npm run start
+4. Open browser and navigate to http://localhost:8080
+5. Time Calculation: It is assumed that it takes 2 minutes to reach next station. And 4 mins to next station if you have to change.
+
+
+OTHER CONSIDERATIONS:
+1. The solution uses graph data structure to create a graph of all nodes.
+2. Some routes make take some time(sometimes upto a minute) to show the proper routes as the graph is maintained in memory. Because of interconnection of nodes and so many nodes oin graph, it looks for all possible paths between selected nodes(the count is in ten thousands) and then return the best among them. Ideally all this will be handled on the backend and optimised for performance for various cases.
+3. Considering the future scope of app, I have used Redux to manage the state of application. 
+4. The app shows 4 best possible paths in term of time and in terms of number of transfers.
